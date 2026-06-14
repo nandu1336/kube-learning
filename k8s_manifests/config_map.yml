@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  config.txt: PORT=8080
+metadata:
+  name: flask-config
+  namespace: kube-learning

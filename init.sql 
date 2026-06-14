@@ -1,0 +1,34 @@
+-- create database and role
+CREATE DATABASE kube_learning;
+
+CREATE USER root WITH PASSWORD 'root';
+
+GRANT ALL PRIVILEGES ON DATABASE kube_learning TO root;
+
+CREATE SCHEMA dbo;
+-- allow the role to create and use objects in the dbo schema
+GRANT CREATE ON SCHEMA dbo TO root;
+GRANT USAGE ON SCHEMA dbo TO root;
+
+-- create users table
+CREATE TABLE IF NOT EXISTS dbo.users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- grant table and sequence privileges
+GRANT SELECT, INSERT, UPDATE, DELETE
+  ON ALL TABLES IN SCHEMA dbo
+  TO root;
+
+GRANT USAGE, SELECT, UPDATE
+  ON ALL SEQUENCES IN SCHEMA dbo
+  TO root;
+
+-- ensure future tables/sequences get the same privileges
+ALTER DEFAULT PRIVILEGES IN SCHEMA dbo
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO root;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA dbo
+  GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO root;

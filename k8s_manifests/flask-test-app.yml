@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata: 
+  name: flask-test-app
+  namespace: kube-learning
+
+spec: 
+  replicas: 1
+
+  selector:
+    matchLabels:  
+      app: flask-test-app
+      
+  template: 
+    metadata: 
+      labels: 
+        app: flask-test-app
+        db: flask_test_db
+        db_type: pg_sql
+        developer: nandu
+    
+    spec: 
+      containers:
+        - name: flask-app-container 
+          image: nk732100/flask-test-app:latest
+          imagePullPolicy: Always
+
+          env: 
+            - name: POD_NAME
+              valueFrom: 
+                fieldRef:
+                  fieldPath: metadata.name
+          ports: 
+            - containerPort: 8000
+          volumeMounts: 
+            - name: flask-config-txt
+              mountPath: /app/config.txt
+              subPath: config.txt
+
+            - name: podinfo 
+              mountPath: /app/podinfo
+
+            - name: test-pvc
+              mountPath: /shared-pvc-storage
+          resources:
+            requests:
+              memory: 10Mi
+              cpu: 250m
+
+            limits: 
+              memory: 250Mi
+              cpu: 500m
+
+        - name: flask-app-db
+          image: postgres:latest
+          env:
+              name: POSTGRES_PASSWORD
+              value: root
+          ports:
+              - containerPort: 5432
+      volumes: 
+        - name: flask-config-txt
+          configMap: 
+            name: flask-config
+        
+        - name: podinfo 
+          downwardAPI: 
+            items:
+              - path: "labels"
+                fieldRef: 
+                  fieldPath: metadata.labels 
+
+        - name: test-pvc
+          persistentVolumeClaim: 
+            claimName: shared-pv

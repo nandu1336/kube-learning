@@ -1,0 +1,5 @@
+.gitignore/*
+.venv/*
+config.txt
+shared-pv/*
+Dockerfile

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: flask-test-app-service
+  namespace: kube-learning
+
+spec:
+  selector:
+    app: flask-test-app
+
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+
+  type: NodePort
